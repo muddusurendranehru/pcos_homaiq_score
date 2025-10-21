@@ -1,0 +1,54 @@
+# ============================================
+# PCOS HOMA-IQ Score - PRODUCTION Environment
+# ============================================
+# 
+# ⚠️  FOR PRODUCTION DEPLOYMENT ONLY!
+# ⚠️  DO NOT USE THIS FOR LOCAL DEVELOPMENT!
+# ⚠️  NEVER COMMIT ACTUAL .env FILES TO GIT!
+#
+# Instructions:
+# 1. Use these values when deploying to production (Render, Heroku, etc.)
+# 2. Add these as Environment Variables in your hosting platform dashboard
+# 3. Generate NEW secrets (don't reuse development secrets!)
+#
+# ============================================
+
+# Environment Type (MUST be "production" for live servers)
+NODE_ENV=production
+
+# Neon PostgreSQL Database Connection
+# Get from: https://console.neon.tech
+DATABASE_URL=postgresql://neondb_owner:PASSWORD@ep-xxxxx.aws.neon.tech/pcos_homaiq_score?sslmode=require
+
+# JWT Secret (GENERATE A NEW ONE!)
+# Run: node backend/generate-jwt-secret.js
+JWT_SECRET=[PASTE NEW 64-CHARACTER SECRET HERE]
+
+# Server Configuration
+PORT=5000
+
+# ============================================
+# How to use in Render:
+# ============================================
+# 1. Go to: https://render.com/dashboard
+# 2. Select your backend service
+# 3. Click "Environment" tab
+# 4. Add each variable:
+#    Key: NODE_ENV          Value: production
+#    Key: DATABASE_URL      Value: [paste from Neon]
+#    Key: JWT_SECRET        Value: [generate new one]
+#    Key: PORT              Value: 5000
+#
+# ============================================
+# Production Checklist:
+# ============================================
+# [ ] NODE_ENV = production (not development!)
+# [ ] DATABASE_URL points to production database
+# [ ] JWT_SECRET is NEW (different from dev)
+# [ ] JWT_SECRET is 64 characters (minimum 32)
+# [ ] CORS origins updated in backend/server.js
+# [ ] Frontend .env has production backend URL
+# [ ] Tested all endpoints work
+# [ ] Database has all required tables
+# ============================================
+
