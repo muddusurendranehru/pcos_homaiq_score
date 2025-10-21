@@ -1,0 +1,108 @@
+═══════════════════════════════════════════════════════════════
+   🎨 FRONTEND DEPLOYMENT - QUICK REFERENCE CARD
+═══════════════════════════════════════════════════════════════
+
+STEP 1: CREATE STATIC SITE
+───────────────────────────────────────────────────────────────
+Go to: https://dashboard.render.com
+Click: "New +" → "Static Site"
+Select: muddusurendranehru/pcos_homaiq_score
+
+STEP 2: CONFIGURE
+───────────────────────────────────────────────────────────────
+Name:              pcos-homaiq-score-frontend
+Branch:            main
+Root Directory:    frontend                    ← IMPORTANT!
+Build Command:     npm install && npm run build
+Publish Directory: build                       ← IMPORTANT!
+
+STEP 3: ENVIRONMENT VARIABLE
+───────────────────────────────────────────────────────────────
+Click "Add Environment Variable"
+
+Key:   REACT_APP_API_URL
+Value: https://pcos-homaiq-score-backend.onrender.com
+
+(Replace with YOUR actual backend URL!)
+
+STEP 4: DEPLOY
+───────────────────────────────────────────────────────────────
+Click: "Create Static Site"
+Wait: 3-5 minutes
+Done: Your frontend is live! 🎉
+
+═══════════════════════════════════════════════════════════════
+   ✅ QUICK SETTINGS SUMMARY
+═══════════════════════════════════════════════════════════════
+
+Service Type:      Static Site (NOT Web Service!)
+Repository:        muddusurendranehru/pcos_homaiq_score
+Branch:            main
+Root Directory:    frontend
+Build Command:     npm install && npm run build
+Publish Directory: build
+Environment Var:   REACT_APP_API_URL=[your backend URL]
+
+═══════════════════════════════════════════════════════════════
+   🧪 TEST AFTER DEPLOYMENT
+═══════════════════════════════════════════════════════════════
+
+1. Visit: https://[your-frontend-name].onrender.com
+2. Signup with test account
+3. Login
+4. Create PCOS assessment
+5. Check data saves successfully
+
+═══════════════════════════════════════════════════════════════
+   🐛 TROUBLESHOOTING
+═══════════════════════════════════════════════════════════════
+
+Problem: Build fails "Cannot find package.json"
+Fix:     Set Root Directory to "frontend"
+
+Problem: Blank page after deployment
+Fix:     Check browser console (F12) for errors
+         Verify REACT_APP_API_URL is set correctly
+
+Problem: API calls fail
+Fix:     Check backend is running at /health
+         Verify REACT_APP_API_URL matches backend URL
+
+═══════════════════════════════════════════════════════════════
+   💡 WHY STATIC SITE?
+═══════════════════════════════════════════════════════════════
+
+✅ FREE tier available (Web Service costs $7/month)
+✅ Faster (served from CDN)
+✅ Perfect for React apps
+✅ Auto-deploys on git push
+✅ Includes FREE SSL certificate
+
+Static Site = Pre-built HTML/CSS/JS files
+Web Service = Running Node.js server (use for backend only)
+
+═══════════════════════════════════════════════════════════════
+   📊 YOUR COMPLETE STACK
+═══════════════════════════════════════════════════════════════
+
+Frontend (Static Site)
+   https://[frontend].onrender.com
+   ↓ API Calls (REACT_APP_API_URL)
+   
+Backend (Web Service)
+   https://pcos-homaiq-score-backend.onrender.com
+   ↓ Database Queries
+   
+Neon PostgreSQL
+   pcos_homaiq_score database
+
+═══════════════════════════════════════════════════════════════
+   🎯 READY TO DEPLOY!
+═══════════════════════════════════════════════════════════════
+
+Time needed: 5 minutes
+Cost: FREE (Static Site tier)
+Result: Full-stack PCOS app live! 🚀
+
+Go to Render and follow steps above! ⬆️
+
