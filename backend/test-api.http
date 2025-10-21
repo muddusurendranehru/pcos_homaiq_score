@@ -1,0 +1,86 @@
+### PCOS HOMA-IQ Score API Test File
+### Use REST Client extension in VS Code or similar tools
+
+@baseUrl = http://localhost:5000
+@token = your_jwt_token_here
+
+### Health Check
+GET {{baseUrl}}/health
+
+### Sign Up New User
+POST {{baseUrl}}/api/auth/signup
+Content-Type: application/json
+
+{
+  "email": "test@example.com",
+  "password": "password123",
+  "confirmPassword": "password123",
+  "fullName": "Test User"
+}
+
+### Login
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "test@example.com",
+  "password": "password123"
+}
+
+### Verify Token
+GET {{baseUrl}}/api/auth/verify
+Authorization: Bearer {{token}}
+
+### Logout
+POST {{baseUrl}}/api/auth/logout
+Authorization: Bearer {{token}}
+
+### Create New Assessment
+POST {{baseUrl}}/api/data
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "age": 28,
+  "weight_kg": 65.5,
+  "height_cm": 165,
+  "bmi": 24.1,
+  "irregular_periods": true,
+  "excess_androgen": false,
+  "polycystic_ovaries": true,
+  "fasting_glucose": 95.0,
+  "fasting_insulin": 12.5,
+  "waist_circumference": 82.0,
+  "blood_pressure_systolic": 120,
+  "blood_pressure_diastolic": 80,
+  "symptoms": "Irregular periods, mild acne",
+  "diagnosis": "PCOS suspected",
+  "assessment_date": "2025-10-20"
+}
+
+### Get All Assessments
+GET {{baseUrl}}/api/data
+Authorization: Bearer {{token}}
+
+### Get Single Assessment (replace with actual UUID)
+GET {{baseUrl}}/api/data/00000000-0000-0000-0000-000000000000
+Authorization: Bearer {{token}}
+
+### Update Assessment (replace with actual UUID)
+PUT {{baseUrl}}/api/data/00000000-0000-0000-0000-000000000000
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "symptoms": "Updated symptoms",
+  "diagnosis": "Confirmed PCOS"
+}
+
+### Delete Assessment (replace with actual UUID)
+DELETE {{baseUrl}}/api/data/00000000-0000-0000-0000-000000000000
+Authorization: Bearer {{token}}
+
+### Get Summary Statistics
+GET {{baseUrl}}/api/data/stats/summary
+Authorization: Bearer {{token}}
+

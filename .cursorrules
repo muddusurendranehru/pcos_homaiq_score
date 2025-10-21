@@ -1,0 +1,215 @@
+# Project: PCOS HOMA-IQ Score Application
+# Stack: Neon PostgreSQL + Node.js/Express Backend + React Frontend
+# Database: pcos_homaiq_score
+
+## Core Rules
+
+### 1. DATABASE FIRST - HEART OF THE PROJECT
+- Use Neon PostgreSQL as the database
+- Database name: "pcos_homaiq_score"
+- Must have exactly 2 tables in the database
+- Tables: `users` and `pcos_assessments`
+- All tables use UUID as primary key (NOT integer - use uuid type)
+- Tables must display their content (implement data viewing)
+
+### 2. BUILD ORDER - BACKEND FIRST
+- Complete and test backend fully before starting frontend
+- Backend must be 100% working and successful
+- Only after backend success, proceed to frontend development
+
+### 3. AUTHENTICATION SYSTEM
+**Sign Up page requires:**
+- Email field
+- Password field
+- Confirm Password field
+
+**Login page requires:**
+- Email field
+- Password field
+
+**After successful login:**
+- Redirect to Dashboard
+- Implement proper middleware for auth protection
+
+### 4. MIDDLEWARE & ALIGNMENT
+- Frontend must align with backend endpoints
+- Protect routes with authentication middleware
+- UUID handling must be consistent between frontend/backend
+- Validate user sessions on protected routes
+
+### 5. DASHBOARD FEATURES (Post-Login)
+User must be able to:
+- INSERT data into tables (PCOS assessments)
+- FETCH/view data from tables
+- LOGOUT functionality
+- View HOMA-IR calculations automatically
+
+## Implementation Checklist
+
+### Phase 1: Database (Neon) ✅ COMPLETED
+- [x] Set up Neon PostgreSQL database named "pcos_homaiq_score"
+- [x] Create 2 tables with UUID primary keys
+- [x] Test database connection
+- [x] Implement queries to display table contents
+- [x] Add automatic HOMA-IR calculation trigger
+
+### Phase 2: Backend ✅ COMPLETED
+- [x] Set up backend framework (Node.js/Express)
+- [x] Configure Neon database connection
+- [x] Create auth endpoints:
+  - POST /api/auth/signup (email, password, confirmPassword)
+  - POST /api/auth/login (email, password)
+  - POST /api/auth/logout
+  - GET /api/auth/verify
+- [x] Create data endpoints:
+  - POST /api/data (insert)
+  - GET /api/data (fetch)
+  - GET /api/data/:id (fetch single)
+  - PUT /api/data/:id (update)
+  - DELETE /api/data/:id (delete)
+  - GET /api/data/stats/summary
+- [x] Implement authentication middleware
+- [x] Hash passwords (use bcrypt)
+- [x] Generate JWT tokens for sessions
+- [x] Test all endpoints thoroughly
+
+### Phase 3: Frontend (Current Phase)
+- [ ] Create React frontend with modern UI
+- [ ] Create Sign Up page (3 fields: email, password, confirm)
+- [ ] Create Login page (2 fields: email, password)
+- [ ] Create Dashboard page with:
+  - Insert form for PCOS assessment
+  - Data display/fetch section
+  - HOMA-IR calculator display
+  - Logout button
+- [ ] Implement protected routes
+- [ ] Store auth tokens properly (localStorage/sessionStorage)
+- [ ] Handle UUID data types correctly
+- [ ] Align all API calls with backend endpoints
+
+## Code Standards
+
+### General
+- Use environment variables for database credentials
+- Handle errors gracefully
+- Validate inputs on both frontend and backend
+- Use UUIDs consistently (not integers)
+- Implement proper password confirmation matching
+- Clear auth tokens on logout
+
+### Backend
+- Use parameterized queries (prevent SQL injection)
+- Use bcryptjs for password hashing
+- JWT tokens expire in 7 days
+- Consistent JSON response format
+- Middleware authentication on protected routes
+
+### Frontend
+- Use React hooks and functional components
+- Implement proper loading states
+- Show user-friendly error messages
+- Validate forms before submission
+- Use axios or fetch for API calls
+- Store JWT token securely
+- Redirect after authentication
+
+### HOMA-IR Calculation
+- Formula: HOMA-IR = (Fasting Insulin × Fasting Glucose) / 405
+- Automatically calculated in database via trigger
+- Display interpretation:
+  - < 1.0: Optimal insulin sensitivity
+  - 1.0 - 1.9: Normal insulin sensitivity
+  - 2.0 - 2.9: Early insulin resistance
+  - ≥ 3.0: Significant insulin resistance
+
+## Tech Stack
+
+- **Database**: Neon PostgreSQL (UUID primary keys)
+- **Backend**: Node.js v16+, Express v4, JWT, bcrypt
+- **Frontend**: React 18+, Modern CSS/Tailwind
+- **Authentication**: JWT tokens with Bearer authorization
+- **API**: RESTful endpoints with JSON responses
+
+## Project Structure
+
+```
+pcos_homaiq_score/
+├── backend/
+│   ├── config/
+│   │   └── database.js       # Neon DB connection
+│   ├── middleware/
+│   │   └── auth.js          # JWT authentication
+│   ├── routes/
+│   │   ├── auth.js          # Auth endpoints
+│   │   └── data.js          # CRUD endpoints
+│   ├── server.js            # Express server
+│   ├── package.json
+│   └── .env                 # Environment variables
+├── frontend/
+│   ├── public/
+│   ├── src/
+│   │   ├── components/      # Reusable components
+│   │   ├── pages/           # Page components
+│   │   ├── services/        # API service layer
+│   │   ├── utils/           # Helper functions
+│   │   ├── App.js
+│   │   └── index.js
+│   ├── package.json
+│   └── .env                 # Frontend config
+├── database/
+│   ├── schema.sql           # Database schema
+│   └── README.md            # Setup instructions
+└── README.md                # Main documentation
+```
+
+## API Endpoint Reference
+
+### Authentication
+- `POST /api/auth/signup` - Register user
+- `POST /api/auth/login` - Login user
+- `POST /api/auth/logout` - Logout user
+- `GET /api/auth/verify` - Verify token
+
+### PCOS Assessments (Protected)
+- `POST /api/data` - Create assessment
+- `GET /api/data` - List all assessments
+- `GET /api/data/:id` - Get single assessment
+- `PUT /api/data/:id` - Update assessment
+- `DELETE /api/data/:id` - Delete assessment
+- `GET /api/data/stats/summary` - Get statistics
+
+## Important Notes
+
+1. **UUID Format**: Always validate UUID format before API calls
+2. **Token Storage**: Store JWT in localStorage, include in Authorization header
+3. **Error Handling**: Display user-friendly messages, log technical details
+4. **Security**: Never expose JWT_SECRET or DATABASE_URL in frontend
+5. **CORS**: Backend must have CORS enabled for frontend communication
+6. **Timestamps**: All timestamps are in UTC
+7. **HOMA-IR**: Calculated automatically, no manual calculation needed
+
+## Development Workflow
+
+1. Start backend: `cd backend && npm run dev`
+2. Start frontend: `cd frontend && npm start`
+3. Test endpoints using backend/test-api.http
+4. Verify database changes in Neon console
+5. Test authentication flow completely before data operations
+6. Always test with actual UUIDs from database
+
+## Deployment Checklist
+
+- [ ] Use strong JWT_SECRET in production
+- [ ] Enable HTTPS
+- [ ] Set proper CORS origins
+- [ ] Use production database connection
+- [ ] Set NODE_ENV=production
+- [ ] Enable rate limiting
+- [ ] Set up logging and monitoring
+- [ ] Regular database backups
+
+---
+
+**Remember**: Database First → Backend First → Frontend Last
+Test thoroughly at each phase before proceeding!
+
