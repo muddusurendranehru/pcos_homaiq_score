@@ -28,6 +28,34 @@ app.get('/health', (req, res) => {
     });
 });
 
+// Root endpoint - API information
+app.get('/', (req, res) => {
+    res.json({
+        success: true,
+        message: 'PCOS HOMA-IQ Score API',
+        version: '1.0.0',
+        status: 'Running',
+        endpoints: {
+            health: 'GET /health',
+            auth: {
+                signup: 'POST /api/auth/signup',
+                login: 'POST /api/auth/login',
+                logout: 'POST /api/auth/logout',
+                verify: 'GET /api/auth/verify'
+            },
+            data: {
+                create: 'POST /api/data',
+                list: 'GET /api/data',
+                get: 'GET /api/data/:id',
+                update: 'PUT /api/data/:id',
+                delete: 'DELETE /api/data/:id',
+                stats: 'GET /api/data/stats/summary'
+            }
+        },
+        documentation: 'https://github.com/muddusurendranehru/pcos_homaiq_score'
+    });
+});
+
 // API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/data', dataRoutes);
