@@ -17,6 +17,10 @@ function DashboardPage() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [formData, setFormData] = useState({
+    // Patient Information
+    patient_name: '',
+    referring_doctor: '',
+    
     age: '',
     weight_kg: '',
     height_cm: '',
@@ -339,6 +343,35 @@ function DashboardPage() {
               </h3>
               
               <div className="grid grid-2">
+                {/* Patient Information */}
+                <div className="form-group">
+                  <label htmlFor="patient_name" className="label">Patient Name</label>
+                  <input
+                    type="text"
+                    id="patient_name"
+                    name="patient_name"
+                    className="input"
+                    value={formData.patient_name}
+                    onChange={handleInputChange}
+                    placeholder="S.V.G.K.LAKSHMI (any format accepted)"
+                    disabled={isLoading}
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="referring_doctor" className="label">Referring Doctor</label>
+                  <input
+                    type="text"
+                    id="referring_doctor"
+                    name="referring_doctor"
+                    className="input"
+                    value={formData.referring_doctor}
+                    onChange={handleInputChange}
+                    placeholder="DR.MRU (any format accepted)"
+                    disabled={isLoading}
+                  />
+                </div>
+
                 <div className="form-group">
                   <label htmlFor="assessment_date" className="label">Assessment Date</label>
                   <input

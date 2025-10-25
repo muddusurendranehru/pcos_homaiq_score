@@ -4,6 +4,10 @@ import { dataAPI } from '../services/api';
 
 function PCOSScoreAnalyzer() {
   const [formData, setFormData] = useState({
+    // Patient Information
+    patient_name: '',
+    referring_doctor: '',
+    
     // REQUIRED FIELDS FOR BACKEND
     age: '',
     weight: '',
@@ -300,6 +304,10 @@ function PCOSScoreAnalyzer() {
 
       // Prepare assessment data for database
       const assessmentData = {
+        // Patient Information
+        patient_name: formData.patient_name || null,
+        referring_doctor: formData.referring_doctor || null,
+        
         assessment_date: new Date().toISOString().split('T')[0],
         age: formData.age ? parseInt(formData.age) : null,
         weight_kg: formData.weight ? parseFloat(formData.weight) : null,
@@ -529,6 +537,44 @@ Score Breakdown: ${result.breakdown.map(b => `${b.name}: ${b.score}/${b.max}`).j
       </div>
 
       <form onSubmit={calculatePCOSScore}>
+        {/* PATIENT INFORMATION */}
+        <div style={{ background: '#f0f9ff', padding: '12px', borderRadius: '8px', marginBottom: '16px' }}>
+          <h4 style={{ fontSize: '14px', fontWeight: '600', color: '#0369a1', marginBottom: '12px', margin: 0 }}>
+            👤 Patient Information
+          </h4>
+          <div className="grid grid-2" style={{ marginTop: '12px' }}>
+            <div className="form-group">
+              <label htmlFor="patient_name" className="label">
+                Patient Name
+              </label>
+              <input
+                id="patient_name"
+                name="patient_name"
+                type="text"
+                className="input"
+                value={formData.patient_name}
+                onChange={handleChange}
+                placeholder="S.V.G.K.LAKSHMI (any format)"
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="referring_doctor" className="label">
+                Referring Doctor
+              </label>
+              <input
+                id="referring_doctor"
+                name="referring_doctor"
+                type="text"
+                className="input"
+                value={formData.referring_doctor}
+                onChange={handleChange}
+                placeholder="DR.MRU (any format)"
+              />
+            </div>
+          </div>
+        </div>
+
         {/* REQUIRED BASIC INFORMATION */}
         <div style={{ background: '#fef2f2', padding: '12px', borderRadius: '8px', marginBottom: '16px' }}>
           <h4 style={{ fontSize: '14px', fontWeight: '600', color: '#991b1b', marginBottom: '12px', margin: 0 }}>
