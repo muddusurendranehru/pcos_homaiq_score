@@ -44,13 +44,58 @@ router.post('/', assessmentValidation, async (req, res) => {
             patient_name,
             referring_doctor,
             
-            // Assessment data
+            // Basic assessment data
             age,
             weight_kg,
             height_cm,
             bmi,
+            waist_circumference,
+            
+            // Lab values
             fasting_glucose,
             fasting_insulin,
+            
+            // Lipid profile
+            total_cholesterol,
+            ldl_cholesterol,
+            hdl_cholesterol,
+            triglycerides,
+            
+            // Rotterdam Criteria - Hormonal
+            lh,
+            fsh,
+            testosterone_total,
+            dhea,
+            dhea_s,
+            
+            // Ultrasound Scan
+            ovary_volume,
+            follicle_size,
+            total_follicles,
+            follicles_0_12,
+            follicles_12_24,
+            follicles_24_36,
+            follicles_above_36,
+            
+            // Family History
+            family_history_diabetes,
+            family_history_hypertension,
+            family_history_atherosclerosis,
+            family_history_cancer,
+            
+            // PCOS indicators
+            irregular_periods,
+            excess_androgen,
+            polycystic_ovaries,
+            
+            // PCOS Score
+            pcos_score,
+            pcos_risk_level,
+            
+            // Blood pressure
+            blood_pressure_systolic,
+            blood_pressure_diastolic,
+            
             diagnosis
         } = req.body;
 
@@ -69,26 +114,66 @@ router.post('/', assessmentValidation, async (req, res) => {
         console.log('- Patient name:', patient_name);
         console.log('- Referring doctor:', referring_doctor);
 
-        // Insert with patient info and assessment data
+        // Insert with ALL assessment data (complete PCOS assessment)
         const result = await db.query(
             `INSERT INTO pcos_assessments (
                 id, user_id, patient_name, referring_doctor, age, 
-                weight_kg, height_cm, bmi, fasting_glucose, fasting_insulin, diagnosis
-            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+                weight_kg, height_cm, bmi, waist_circumference,
+                fasting_glucose, fasting_insulin,
+                total_cholesterol, ldl_cholesterol, hdl_cholesterol, triglycerides,
+                lh, fsh, testosterone_total, dhea, dhea_s,
+                ovary_volume, follicle_size, total_follicles, 
+                follicles_0_12, follicles_12_24, follicles_24_36, follicles_above_36,
+                family_history_diabetes, family_history_hypertension, 
+                family_history_atherosclerosis, family_history_cancer,
+                irregular_periods, excess_androgen, polycystic_ovaries,
+                pcos_score, pcos_risk_level,
+                blood_pressure_systolic, blood_pressure_diastolic,
+                diagnosis
+            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36, $37, $38, $39)
             RETURNING id, patient_name, referring_doctor, age, weight_kg, height_cm, bmi, 
-                      fasting_glucose, fasting_insulin, homa_ir, created_at`,
+                      fasting_glucose, fasting_insulin, homa_ir, hdl_cholesterol, 
+                      total_follicles, follicle_size, lh, fsh, testosterone_total, created_at`,
             [
-                assessmentId,           // $1 - UUID for assessment
-                userIdAsUUID,          // $2 - UUID for user_id
-                patient_name || null,   // $3 - UNIVERSAL acceptance
-                referring_doctor || null, // $4 - UNIVERSAL acceptance
-                age || null,           // $5
-                weight_kg || null,     // $6
-                height_cm || null,     // $7
-                bmi || null,           // $8
-                fasting_glucose || null, // $9
-                fasting_insulin || null, // $10
-                diagnosis || null      // $11
+                assessmentId,                    // $1 - UUID for assessment
+                userIdAsUUID,                   // $2 - UUID for user_id
+                patient_name || null,            // $3 - Patient name
+                referring_doctor || null,        // $4 - Referring doctor
+                age || null,                    // $5 - Age
+                weight_kg || null,              // $6 - Weight
+                height_cm || null,              // $7 - Height
+                bmi || null,                    // $8 - BMI
+                waist_circumference || null,    // $9 - Waist
+                fasting_glucose || null,        // $10 - Glucose
+                fasting_insulin || null,        // $11 - Insulin
+                total_cholesterol || null,      // $12 - Total cholesterol
+                ldl_cholesterol || null,        // $13 - LDL
+                hdl_cholesterol || null,        // $14 - HDL ✅
+                triglycerides || null,          // $15 - Triglycerides
+                lh || null,                     // $16 - LH ✅
+                fsh || null,                    // $17 - FSH ✅
+                testosterone_total || null,     // $18 - Testosterone ✅
+                dhea || null,                   // $19 - DHEA
+                dhea_s || null,                 // $20 - DHEA-S
+                ovary_volume || null,           // $21 - Ovary volume
+                follicle_size || null,          // $22 - Follicle size ✅
+                total_follicles || null,        // $23 - Total follicles ✅
+                follicles_0_12 || null,         // $24 - Follicles 0-12
+                follicles_12_24 || null,        // $25 - Follicles 12-24
+                follicles_24_36 || null,        // $26 - Follicles 24-36
+                follicles_above_36 || null,     // $27 - Follicles >36
+                family_history_diabetes || false,        // $28 - Family diabetes
+                family_history_hypertension || false,    // $29 - Family hypertension
+                family_history_atherosclerosis || false, // $30 - Family atherosclerosis
+                family_history_cancer || false,          // $31 - Family cancer
+                irregular_periods || false,     // $32 - Irregular periods
+                excess_androgen || false,       // $33 - Excess androgen
+                polycystic_ovaries || false,    // $34 - Polycystic ovaries
+                pcos_score || null,             // $35 - PCOS score
+                pcos_risk_level || null,        // $36 - PCOS risk level
+                blood_pressure_systolic || null, // $37 - BP systolic
+                blood_pressure_diastolic || null, // $38 - BP diastolic
+                diagnosis || null               // $39 - Diagnosis
             ]
         );
 
