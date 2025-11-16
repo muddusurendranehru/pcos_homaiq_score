@@ -241,10 +241,39 @@ code {
 
 /* Show sticky CTA only on small screens; hide inline CTA there */
 @media (max-width: 768px) {
-  .sticky-cta { display: block; }
+  .sticky-cta {
+    display: block !important;
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+  }
+  /* make room so sticky bar doesn't overlap content */
+  body { padding-bottom: 80px; }
   .cta-inline { display: none !important; }
 }
 @media (min-width: 769px) {
   .sticky-cta { display: none; }
+}
+
+/* Landing slide media height / responsive portrait focus */
+.slide-media{
+  border-radius: 16px;
+  overflow: hidden;
+  height: 240px; /* desktop/tablet */
+  background: #f3f4f6;
+}
+.slide-media img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
+  display: block;
+}
+@media (max-width: 768px){
+  .slide-media{
+    height: 420px; /* taller portrait-friendly on mobile */
+  }
 }
 

@@ -165,18 +165,10 @@ function LandingPage() {
                     gap: 12,
                   }}
                 >
-                  <div
-                    style={{
-                      borderRadius: 12,
-                      overflow: 'hidden',
-                      height: 220,
-                      backgroundColor: '#f3f4f6',
-                    }}
-                  >
+                  <div className="slide-media">
                     <img
                       src={s.image}
                       alt={s.title}
-                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                       loading="lazy"
                       referrerPolicy="no-referrer"
                       decoding="async"
@@ -296,7 +288,7 @@ function LandingPage() {
         </div>
       </div>
       {/* Mobile sticky CTA bar */}
-      <div className="sticky-cta" style={{ display: 'none' }}>
+      <div className="sticky-cta">
         <div style={{ display: 'flex', gap: 12, maxWidth: 780, margin: '0 auto', padding: '8px 16px' }}>
           <button
             className="btn"
