@@ -228,3 +228,23 @@ code {
   gap: 16px;
 }
 
+/* Sticky CTA for mobile */
+.sticky-cta {
+  position: sticky;
+  bottom: 0;
+  z-index: 50;
+  background: #ffffffcc;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border-top: 1px solid rgba(0,0,0,0.06);
+}
+
+/* Show sticky CTA only on small screens; hide inline CTA there */
+@media (max-width: 768px) {
+  .sticky-cta { display: block; }
+  .cta-inline { display: none !important; }
+}
+@media (min-width: 769px) {
+  .sticky-cta { display: none; }
+}
+
