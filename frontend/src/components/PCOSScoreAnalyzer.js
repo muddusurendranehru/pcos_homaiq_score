@@ -8,36 +8,46 @@ function PCOSScoreAnalyzer() {
     patient_name: '',
     referring_doctor: '',
     
-    // REQUIRED FIELDS FOR BACKEND
+    // Family History
+    familyDiabetes: false,
+    familyHypertension: false,
+    familyAtherosclerosis: false,
+    familyCancer: false,
+    
+    // Vital Data (Blood Pressure)
+    blood_pressure_systolic: '',
+    blood_pressure_diastolic: '',
+    
+    // Basic Measurements
     age: '',
     weight: '',
     height: '',
-    fastingInsulin: '',
-    // Metabolic
     waist: '',
-    homaIR: '',
-    tygIndex: '',
     bmi: '',
+    
+    // Lab Values
+    glucose: '',
+    fastingInsulin: '',
     totalCholesterol: '',
     ldl: '',
     hdl: '',
     triglycerides: '',
-    glucose: '',
-    totalFollicles: '',
-    // Rotterdam Criteria - Hormonal
+    
+    // HOMA & TYG Index
+    homaIR: '',
+    tygIndex: '',
+    
+    // PCOS Values - Hormonal (Rotterdam Criteria)
     lh: '',
     fsh: '',
     testosterone: '',
     dhea: '',
     dheas: '',
-    // Scan Parameters
-    ovaryVolume: '',
+    
+    // PCOS Values - Follicles & Scan
+    totalFollicles: '',
     follicleSize: '',
-    // Family History
-    familyDiabetes: false,
-    familyHypertension: false,
-    familyAtherosclerosis: false,
-    familyCancer: false
+    ovaryVolume: ''
   });
   const [result, setResult] = useState(null);
   const [saveMessage, setSaveMessage] = useState({ type: '', text: '' });
@@ -314,6 +324,10 @@ function PCOSScoreAnalyzer() {
         height_cm: formData.height ? parseFloat(formData.height) : null,
         bmi: calculatedBMI,
         waist_circumference: formData.waist ? parseFloat(formData.waist) : null,
+        
+        // Blood Pressure (Vital Data)
+        blood_pressure_systolic: formData.blood_pressure_systolic ? parseInt(formData.blood_pressure_systolic) : null,
+        blood_pressure_diastolic: formData.blood_pressure_diastolic ? parseInt(formData.blood_pressure_diastolic) : null,
         
         // Lab values
         fasting_glucose: formData.glucose ? parseFloat(formData.glucose) : null,

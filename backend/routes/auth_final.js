@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken');
 const { body, validationResult } = require('express-validator');
 const db = require('../config/database');
 
-// Validation rules
+// Validation rules for SIGNUP (3 fields: email, password, confirmPassword)
 const signupValidation = [
     body('email').isEmail().normalizeEmail().withMessage('Please provide a valid email'),
     body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters long'),
@@ -14,17 +14,16 @@ const signupValidation = [
             throw new Error('Password confirmation does not match password');
         }
         return true;
-    }),
-    // Phone validation: optional, accepts ANY phone format - universal acceptance
-    body('phone').optional().isLength({ min: 1 }).withMessage('Phone number cannot be empty if provided')
+    })
 ];
 
+// Validation rules for LOGIN (2 fields: email, password)
 const loginValidation = [
     body('email').isEmail().normalizeEmail().withMessage('Please provide a valid email'),
     body('password').notEmpty().withMessage('Password is required')
 ];
 
-// POST /api/auth/signup - Register new user
+// POST /api/auth/signup - Register new user (3 fields: email, password, confirmPassword)
 router.post('/signup', signupValidation, async (req, res) => {
     try {
         // Check validation errors
@@ -36,7 +35,7 @@ router.post('/signup', signupValidation, async (req, res) => {
             });
         }
 
-        const { email, password, fullName } = req.body;
+        const { email, password, confirmPassword } = req.body;
 
         // Check if user already exists
         const userExists = await db.query(
@@ -55,12 +54,16 @@ router.post('/signup', signupValidation, async (req, res) => {
         const salt = await bcrypt.genSalt(10);
         const passwordHash = await bcrypt.hash(password, salt);
 
-        // Create user (UUID default in DB)
+        // Get next ID
+        const maxIdResult = await db.query('SELECT COALESCE(MAX(id), 0) + 1 as next_id FROM users');
+        const nextId = maxIdResult.rows[0].next_id;
+
+        // Create user - INSERT data into users table
         const result = await db.query(
-            `INSERT INTO users (email, password_hash, full_name) 
-             VALUES ($1, $2, $3) 
-             RETURNING id, email, full_name, created_at`,
-            [email, passwordHash, fullName || null]
+            `INSERT INTO users (id, email, password_hash, name, phone) 
+             VALUES ($1, $2, $3, $4, $5) 
+             RETURNING id, email, name, phone, created_at`,
+            [nextId, email, passwordHash, email.split('@')[0], null] // Use email prefix as name
         );
 
         const user = result.rows[0];
@@ -79,7 +82,8 @@ router.post('/signup', signupValidation, async (req, res) => {
             user: {
                 id: user.id,
                 email: user.email,
-                fullName: user.full_name,
+                fullName: user.name,
+                phone: user.phone,
                 createdAt: user.created_at
             }
         });
@@ -93,7 +97,7 @@ router.post('/signup', signupValidation, async (req, res) => {
     }
 });
 
-// POST /api/auth/login - Login user
+// POST /api/auth/login - Login user (2 fields: email, password)
 router.post('/login', loginValidation, async (req, res) => {
     try {
         // Check validation errors
@@ -107,9 +111,9 @@ router.post('/login', loginValidation, async (req, res) => {
 
         const { email, password } = req.body;
 
-        // Find user by email
+        // FETCH user data from users table
         const result = await db.query(
-            'SELECT id, email, password_hash, full_name FROM users WHERE email = $1',
+            'SELECT id, email, password_hash, name, phone FROM users WHERE email = $1',
             [email]
         );
 
@@ -132,13 +136,14 @@ router.post('/login', loginValidation, async (req, res) => {
             });
         }
 
-        // Generate JWT token
+        // Generate JWT token for dashboard access
         const token = jwt.sign(
             { id: user.id, email: user.email },
             process.env.JWT_SECRET,
             { expiresIn: '7d' }
         );
 
+        // Login successful - redirect to dashboard (frontend handles redirect)
         res.json({
             success: true,
             message: 'Login successful',
@@ -146,7 +151,8 @@ router.post('/login', loginValidation, async (req, res) => {
             user: {
                 id: user.id,
                 email: user.email,
-                fullName: user.full_name
+                fullName: user.name,
+                phone: user.phone
             }
         });
 
@@ -159,17 +165,15 @@ router.post('/login', loginValidation, async (req, res) => {
     }
 });
 
-// POST /api/auth/logout - Logout user (client-side token removal)
+// POST /api/auth/logout - Logout user
 router.post('/logout', (req, res) => {
-    // Since we're using JWT, logout is handled client-side by removing the token
-    // This endpoint is here for consistency and future enhancements
     res.json({
         success: true,
         message: 'Logout successful. Please remove the token from client storage.'
     });
 });
 
-// GET /api/auth/verify - Verify token and get user info
+// GET /api/auth/verify - Verify token for dashboard access
 router.get('/verify', async (req, res) => {
     try {
         const authHeader = req.headers['authorization'];
@@ -184,9 +188,9 @@ router.get('/verify', async (req, res) => {
 
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-        // Get user info
+        // FETCH user info for dashboard
         const result = await db.query(
-            'SELECT id, email, full_name FROM users WHERE id = $1',
+            'SELECT id, email, name, phone FROM users WHERE id = $1',
             [decoded.id]
         );
 
@@ -204,7 +208,8 @@ router.get('/verify', async (req, res) => {
             user: {
                 id: user.id,
                 email: user.email,
-                fullName: user.full_name
+                fullName: user.name,
+                phone: user.phone
             }
         });
 

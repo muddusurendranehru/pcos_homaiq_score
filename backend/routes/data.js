@@ -99,13 +99,13 @@ router.post('/', assessmentValidation, async (req, res) => {
             diagnosis
         } = req.body;
 
-        const userId = req.user.id; // This is integer from users table
+        const userId = req.user.id; // UUID from users table encoded in JWT
 
         // Generate UUID for assessment
         const assessmentId = require('crypto').randomUUID();
         
-        // Convert integer user_id to UUID format for compatibility
-        const userIdAsUUID = require('crypto').randomUUID(); // Generate new UUID for this user
+        // Use the authenticated user's UUID directly for the foreign key
+        const userIdAsUUID = userId;
 
         console.log('Creating assessment with patient data:');
         console.log('- Assessment ID:', assessmentId);

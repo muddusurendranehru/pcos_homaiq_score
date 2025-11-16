@@ -15,8 +15,8 @@ const signupValidation = [
         }
         return true;
     }),
-    // Phone validation: optional, accepts ANY phone format - universal acceptance
-    body('phone').optional().isLength({ min: 1 }).withMessage('Phone number cannot be empty if provided')
+    // Phone validation: optional, accepts +91... or 10 digits
+    body('phone').optional().matches(/^(\+\d{1,3})?\d{10}$/).withMessage('Phone must be +country code or 10 digits (e.g., +919876543210 or 9876543210)')
 ];
 
 const loginValidation = [
@@ -36,7 +36,7 @@ router.post('/signup', signupValidation, async (req, res) => {
             });
         }
 
-        const { email, password, fullName } = req.body;
+        const { email, password, fullName, phone } = req.body;
 
         // Check if user already exists
         const userExists = await db.query(
@@ -55,12 +55,16 @@ router.post('/signup', signupValidation, async (req, res) => {
         const salt = await bcrypt.genSalt(10);
         const passwordHash = await bcrypt.hash(password, salt);
 
-        // Create user (UUID default in DB)
+        // Get next ID (since auto-increment might not be set up)
+        const maxIdResult = await db.query('SELECT COALESCE(MAX(id), 0) + 1 as next_id FROM users');
+        const nextId = maxIdResult.rows[0].next_id;
+
+        // Create user - column name: name (not full_name)
         const result = await db.query(
-            `INSERT INTO users (email, password_hash, full_name) 
-             VALUES ($1, $2, $3) 
-             RETURNING id, email, full_name, created_at`,
-            [email, passwordHash, fullName || null]
+            `INSERT INTO users (id, email, password_hash, name, phone) 
+             VALUES ($1, $2, $3, $4, $5) 
+             RETURNING id, email, name, phone, created_at`,
+            [nextId, email, passwordHash, fullName || null, phone || null]
         );
 
         const user = result.rows[0];
@@ -79,7 +83,8 @@ router.post('/signup', signupValidation, async (req, res) => {
             user: {
                 id: user.id,
                 email: user.email,
-                fullName: user.full_name,
+                fullName: user.name,
+                phone: user.phone,
                 createdAt: user.created_at
             }
         });
@@ -107,9 +112,9 @@ router.post('/login', loginValidation, async (req, res) => {
 
         const { email, password } = req.body;
 
-        // Find user by email
+        // Find user by email - column name: name (not full_name)
         const result = await db.query(
-            'SELECT id, email, password_hash, full_name FROM users WHERE email = $1',
+            'SELECT id, email, password_hash, name, phone FROM users WHERE email = $1',
             [email]
         );
 
@@ -146,7 +151,8 @@ router.post('/login', loginValidation, async (req, res) => {
             user: {
                 id: user.id,
                 email: user.email,
-                fullName: user.full_name
+                fullName: user.name,
+                phone: user.phone
             }
         });
 
@@ -184,9 +190,9 @@ router.get('/verify', async (req, res) => {
 
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-        // Get user info
+        // Get user info - column name: name (not full_name)
         const result = await db.query(
-            'SELECT id, email, full_name FROM users WHERE id = $1',
+            'SELECT id, email, name, phone FROM users WHERE id = $1',
             [decoded.id]
         );
 
@@ -204,7 +210,8 @@ router.get('/verify', async (req, res) => {
             user: {
                 id: user.id,
                 email: user.email,
-                fullName: user.full_name
+                fullName: user.name,
+                phone: user.phone
             }
         });
 
